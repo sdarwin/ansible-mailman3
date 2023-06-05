@@ -1,13 +1,7 @@
+---
 name: ansible-lint
 
-# on: [pull_request_target]
-on:
-  pull_request:
-  push:
-    branches:
-      - master
-      - develop
-      - feature/**
+on: [pull_request_target]
 
 jobs:
   ansible-lint:
@@ -26,3 +20,34 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           filter_mode: nofilter
+---
+name: ansible-lint-local
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/**
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint ansible-lint ansible
+
+      - name: Lint code.
+        run: |
+          set -e
+          yamllint .
+          ansible-lint .
