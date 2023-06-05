@@ -4,3 +4,10 @@ rules:
   line-length:
     max: 400
     level: warning
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+    check-keys: true
+    ignore: |
+      .github/workflows
