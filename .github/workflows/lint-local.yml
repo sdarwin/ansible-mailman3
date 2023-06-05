@@ -1,3 +1,4 @@
+---
 name: ansible-lint-local
 
 on:
