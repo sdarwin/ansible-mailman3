@@ -30,6 +30,10 @@
 - name: Include Django management tasks
   ansible.builtin.import_tasks: django.yml
 
+- name: Include Nginx tasks
+  ansible.builtin.import_tasks: nginx.yml
+  when: mailman3_install_nginx
+
 - name: Include Postfix map distribution tasks
   ansible.builtin.include_tasks: distribute_maps.yml
   when: mailman3_distribute_maps is defined

@@ -426,3 +426,10 @@ __mailman3_os: >-
       ansible_os_family
     ) | lower
   }}
+
+# Server name nginx should listen on, defaults to inventory_hostname.
+mailman3_web_url: "{{ inventory_hostname }}"
+mailman3_install_nginx: true
+# Override this will a value similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
+mailman3_hyperkitty_server_url: "http://localhost"
+mailman3_nginx_ssl_certs: "include snippets/snakeoil.conf;"
