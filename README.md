@@ -1,6 +1,8 @@
 Mailman 3 Ansible Role
 ======================
 
+See [docs/README.md](docs/README.md) for the C++ specific admin info.  
+
 `galaxyproject.mailman3` is an Ansible role to install the [Mailman 3][mailman3] suite. This role installs all
 components of the suite: Mailman 3 Core, and the Django-based web interfaces, Postorius and Hyperkitty.
 
