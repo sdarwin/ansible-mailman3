@@ -1,0 +1,113 @@
+# -*- coding: utf-8 -*-
+# Mailman Web configuration file.
+# /etc/mailman3/settings.py
+
+from mailman_web.settings.base import *
+from mailman_web.settings.mailman import *
+
+
+#: Default list of admins who receive the emails from error logging.
+ADMINS = (
+    ('__', '__'),
+)
+
+# Postgresql database setup.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': '__',
+        'NAME': '__',
+        'PASSWORD': '__',
+        'PORT': '5432',
+        'USER': 'mailman3_web',
+    }
+}
+
+# 'collectstatic' command will copy all the static files here.
+# Alias this location from your webserver to `/static`
+STATIC_ROOT = '/var/lib/mailman3/web/static'
+
+# enable the 'compress' command.
+COMPRESS_ENABLED = True
+
+#: Logging configuration.
+del LOGGING['handlers']['file']
+LOGGING['handlers']['console']['level'] = 'INFO'
+LOGGING['formatters']['simple']['format'] = '%(levelname)s %(name)s %(message)s'
+# In case the handler config is updated upstream, we don't want to fully overwrite it, so we just manipulate it
+for _logger in LOGGING['loggers'].values():
+    _handlers = _logger['handlers']
+    for _handler in ('file', 'mail_admins'):
+        try:
+            _handlers.remove(_handler)
+        except ValueError:
+            pass
+    if 'console' not in _handlers:
+        _logger['handlers'].append('console')
+
+#: Hosts/domain names that are valid for this site; required if DEBUG is False.
+#: See https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = [
+    "localhost",  # Archiving API from Mailman, keep it.
+    "127.0.0.1",
+    # Add here all production URLs you may have.
+    "mailman.boost.cpp.al",
+]
+
+#: See https://docs.djangoproject.com/en/dev/ref/settings/#csrf-trusted-origins
+#: For Django <4.0 these are of the form 'lists.example.com' or
+#: '.example.com' to include subdomains and for Django >=4.0 they include
+#: the scheme as in 'https://lists.example.com' or 'https://*.example.com'.
+CSRF_TRUSTED_ORIGINS = [
+    # "lists.your-domain.org",
+    # Add here all production domains you have.
+    "http://mailman.boost.cpp.al",
+    "https://mailman.boost.cpp.al",
+]
+
+#: Current Django Site being served. This is used to customize the web host
+#: being used to serve the current website. For more details about Django
+#: site, see: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
+SITE_ID = 1
+
+# Set this to a new secret value.
+SECRET_KEY = "__"
+
+# Set this to match the api_key setting in
+# /opt/mailman/mm/mailman-hyperkitty.cfg (quoted here, not there).
+MAILMAN_ARCHIVER_KEY = '__'
+
+# The sender of emails from Django such as address confirmation requests.
+# Set this to a valid email address.
+DEFAULT_FROM_EMAIL = 'postorius@mailman.boost.cpp.al'
+
+# The sender of error messages from Django. Set this to a valid email
+# address.
+SERVER_EMAIL = 'root@mailman.boost.cpp.al'
+
+# Mailman API credentials
+MAILMAN_REST_API_URL = 'http://localhost:8001'
+MAILMAN_REST_API_USER = 'restadmin'
+MAILMAN_REST_API_PASS = 'restpass'
+
+#: django-compressor
+#: https://pypi.python.org/pypi/django_compressor
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'pysassc -t compressed {infile} {outfile}'),
+    ('text/x-sass', 'pysassc -t compressed {infile} {outfile}'),
+)
+
+#
+# Full-text search engine
+#
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+
+# Add custom middleware to set REMOTE_ADDR when using a unix domain socket
+MIDDLEWARE = MIDDLEWARE + ('ansible_galaxyproject_mailman3_middleware.SetRemoteAddrFromForwardedFor',)
+

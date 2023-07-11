@@ -1,10 +1,67 @@
 
 ## cpp.al notes  
 
+[Overview](#overview)  
+[Web Integration](#web-integration)  
 [Ansible installation](#ansible-installation)  
 [List Setup](#list-setup)  
 
+## Overview
+
+This Ansible role, originally based on https://github.com/galaxyproject/ansible-mailman3, will install either mailman-core (branch 
+https://github.com/cppalliance/ansible-mailman3/tree/cppal-core) or both mailman-web and mailman-core (branch https://github.com/cppalliance/ansible-mailman3/tree/cppal-full).
+
+In production, the cppal-core branch installs only the core component. The mailman-web package will be included in the main Django web project and therefore Ansible will not install it.  
+
+## Web Integration
+
+When adding mailman-web into the boost website, which settings need to be added?  An example [django setting.py file has been included here.](settings.py.example1)  
+
+Although those settings shouldn't be copy-pasted verbatim, most of them will be needed in some form or another.  Migrate those settings into the web project.  
+
+Consider there are three applications (postorius, hyperkitty, mailman-core) all connecting between each other and the database, resulting in 9 possible connection paths. The filenames may change depending upon the deployment.   
+
+```
+postorius -> mailman-core		/var/lib/mailman3/web/project/settings.py ->
+						# Mailman API credentials
+						MAILMAN_REST_API_URL = 'http://localhost:8001'
+						MAILMAN_REST_API_USER = 'restadmin'
+						MAILMAN_REST_API_PASS = 'restpass'
+						(matches /etc/mailman3/mailman.cfg)
+
+postorius -> hyperkitty			---
+
+postorius -> db				/var/lib/mailman3/web/project/settings.py -> DATABASES = { 'default': 
+
+hyperkitty -> mailman-core		---
+
+hyperkitty -> postorius			---
+
+hyperkitty -> db			/var/lib/mailman3/web/project/settings.py -> DATABASES = { 'default': 
+
+mailman-core -> hyperkitty		/etc/mailman3/hyperkitty.cfg ->
+					[general]
+					base_url: https://mailman-staging.boost.cpp.al/archives/
+					api_key: XYZ...   (matches settings.py on the other end)
+
+mailman-core -> postorius		---
+
+mailman-core -> db			/etc/mailman3/mailman.cfg ->
+						[database]
+						class: mailman.database.postgresql.PostgreSQLDatabase
+						url: postgresql://mailman3_core:__passwd__!@staging-db1.boost.cpp.al/mailman3_core
+
+```
+
+In settings.py, HAYSTACK_CONNECTIONS deals with full text indexing. By default this uses the whoosh backend which stores files in /var/lib/mailman3/web/fulltext_index or the equivalent. However with docker/kubernetes the indexes ought to be hosted remotely instead of in the local filesystem. Switch to the Elasticsearch backend. Prior to implementing Elasticsearch, Hyperkitty archives should still work but without the 'search' feature.  
+
+Mailman-web recommended cron jobs to handle periodic tasks. See the example cron file in this directory [cron.d.example1](cron.d.example1). Those should be translated to celery jobs on the web side.  
+
 ## Ansible Installation
+
+The required list of variables will change depending on a core-only installation or also installing mailman-web.  
+
+The following is for a full install, using the cppal-full branch.  
 
 - Configure /etc/ansible/host_vars/mailman-staging.boost.cpp.al/vars   
 

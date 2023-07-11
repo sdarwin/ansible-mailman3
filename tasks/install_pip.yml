@@ -33,8 +33,6 @@
     # Ensure the parents, if they do not exist, are not created with the list user as the owner
     - path: "{{ mailman3_core_var_dir | dirname }}"
       mode: "0755"
-    - path: "{{ mailman3_web_var_dir | dirname }}"
-      mode: "0755"
     - path: "{{ mailman3_core_etc_dir }}"
       mode: "0755"
     - path: "{{ mailman3_core_var_dir }}"
@@ -45,39 +43,6 @@
       owner: "{{ __mailman3_core_user_name }}"
       group: "{{ __mailman3_core_group_name }}"
       mode: "0755"
-    - path: "{{ mailman3_web_var_dir }}"
-      owner: "{{ __mailman3_web_user_name }}"
-      group: "{{ __mailman3_web_group_name }}"
-      mode: "0755"
-    - path: "{{ mailman3_web_var_dir }}/db"
-      owner: "{{ __mailman3_web_user_name }}"
-      group: "{{ __mailman3_web_group_name }}"
-      mode: "0750"
-    - path: "{{ mailman3_web_var_dir }}/fulltext_index"
-      owner: "{{ __mailman3_web_user_name }}"
-      group: "{{ __mailman3_web_group_name }}"
-      mode: "0750"
-    - path: "{{ mailman3_web_var_dir }}/emails"
-      owner: "{{ __mailman3_web_user_name }}"
-      group: "{{ __mailman3_web_group_name }}"
-      mode: "0750"
-    - path: "{{ mailman3_django_project_dir }}"
-      group: "{{ __mailman3_web_group_name }}"
-      mode: "0750"
-    - path: "{{ (mailman3_django_log_dir | default('/')) | dirname }}"
-      owner: "{{ __mailman3_web_user_name }}"
-      group: "{{ __mailman3_web_group_name }}"
-      mode: "0755"
-      when: "{{ mailman3_django_log_dir is defined }}"
-
-- name: Create HyperKitty attachment directory
-  ansible.builtin.file:
-    path: "{{ __mailman3_django_config_merged.hyperkitty_attachment_folder }}"
-    owner: "{{ __mailman3_web_user_name }}"
-    group: "{{ __mailman3_web_group_name }}"
-    mode: "0750"
-    state: directory
-  when: __mailman3_django_config_merged.hyperkitty_attachment_folder is defined
 
 - name: Install systemd service unit files
   ansible.builtin.template:
@@ -87,8 +52,6 @@
   loop:
     - src: mailman3-core.service
       dest: "{{ mailman3_core_service_name }}.service"
-    - src: mailman3-web.service
-      dest: "{{ mailman3_web_service_name }}{{ '@' if mailman3_domains is defined else '' }}.service"
   loop_control:
     label: "{{ item.dest }}"
   when: mailman3_process_manager == 'systemd'
@@ -96,65 +59,3 @@
     - Reload systemd manager configuration
     # TODO: split tasks to only restart the affected service
     - Restart mailman3-core service
-    - Restart mailman3-web service
-
-- name: Install systemd socket unit file
-  ansible.builtin.template:
-    src: mailman3-web.socket.j2
-    dest: "/etc/systemd/system/{{ mailman3_web_service_name }}{{ '@' if mailman3_domains is defined else '' }}.socket"
-    mode: "0644"
-  when: mailman3_process_manager == 'systemd'
-  notify:
-    - Reload systemd manager configuration
-    - Restart mailman3-core service
-    - Restart mailman3-web service
-
-# TODO: remove the non-instance service unit file if mailman3_domains is defined, remove the instance service unit file
-
-- name: Create Django settings file
-  ansible.builtin.template:
-    src: settings.py.j2
-    dest: "{{ mailman3_django_project_dir }}/settings.py"
-    mode: "0640"
-    owner: root
-    group: "{{ __mailman3_web_group_name }}"
-    backup: "{{ mailman3_backup_configs }}"
-  notify:
-    - Reload mailman3-web service
-
-- name: Create per-domain Django settings files
-  ansible.builtin.template:
-    src: settings_domain.py.j2
-    dest: "{{ mailman3_django_project_dir }}/settings_{{ mailman3_domain | replace('.', '_') }}.py"
-    mode: "0640"
-    owner: root
-    group: "{{ __mailman3_web_group_name }}"
-    backup: "{{ mailman3_backup_configs }}"
-  loop: "{{ mailman3_domains | default([]) }}"
-  loop_control:
-    extended: true
-    loop_var: mailman3_domain
-  when: mailman3_domains is defined
-  notify:
-    - Reload mailman3-web service
-
-- name: Create gunicorn config file
-  ansible.builtin.template:
-    src: gunicorn_config.py.j2
-    dest: "{{ mailman3_core_etc_dir }}/gunicorn_config.py"
-    mode: "0644"
-    owner: root
-    backup: "{{ mailman3_backup_configs }}"
-  when: mailman3_python_wsgi_package == "gunicorn"
-  notify:
-    - Restart mailman3-web service
-
-# community.general.django_manage hardcodes `<project_dir>/manage.py`, so we make a fake manage.py that calls
-# django-admin
-- name: Create fake manage.py for community.general.django_manage
-  ansible.builtin.copy:
-    content: |
-      #!/usr/bin/env sh
-      exec django-admin "$@"
-    dest: "{{ mailman3_django_project_dir }}/manage.py"
-    mode: "0755"

@@ -31,12 +31,6 @@ mailman3_core_var_dir: /var/lib/mailman3
 # Mailman Core logs
 mailman3_core_log_dir: /var/log/mailman3
 
-# Mailman Web Interface configuration files, project, and data
-mailman3_web_var_dir: "{{ mailman3_core_var_dir }}/web"
-
-# Mailman Web Interface log file. Only applies to pip installation. If unset, logs to journald.
-# mailman3_web_log_file: /var/log/mailman3/web/mailman3-web.log
-
 # When installing with pip and Mailman is already installed, should it be upgraded to the latest version? It's can be
 # convenient to only set this when you explicitly want to upgrade by running `ansible-playbook ... -e
 # mailman3_upgrade=true`
@@ -83,36 +77,12 @@ mailman3_create_core_user: "{{ mailman3_core_user is defined }}"
 # really true, and it's preferable to run it as a different user for security best practices. Thus we create a user if
 # installing Mailman 3 with pip.
 
-# The actual web user variable, the default depends on the installation method as discussed below. Override this
-# variable to set your own, not the __mailman3* variables below. If you set mailman3_web_user to an existing user (not
-# created by this role), set both `name` and `group` (the other options are unnecessary).
-mailman3_web_user: "{{ (mailman3_install_method == 'pip') | ternary(__mailman3_web_user, __mailman3_debian_web_user) }}"
-
-# The default web user if installing with pip.
-__mailman3_web_user:
-  name: mailman3-web
-  comment: "Mailman Web Services"
-  home: "{{ mailman3_web_var_dir }}"
-  system: true
-
-# The default web user if installing with packages. This is the standard Debian web server user, since this is what the
-# packages expect.
-__mailman3_debian_web_user:
-  name: www-data
-  group: www-data
-
-# If installing with pip, the role will attempt to create the web user user, unless you disable it with this option
-mailman3_create_web_user: "{{ mailman3_install_method == 'pip' }}"
-
 #
 # General configuration
 #
 
 # Should Ansible's backup feature be used when configs change?
 mailman3_backup_configs: false
-
-# List of hosted domains, leave unset if you are only serving a single domain.
-# mailman3_domains: []
 
 # This is both Django SERVER_EMAIL and Mailman Core site_owner, and should be set to a real person.
 mailman3_site_owner: "root@{{ inventory_hostname }}"
@@ -202,162 +172,12 @@ __mailman3_config_default:
     verp_delivery_interval: "1"
 
 #
-# Mailman Web Interface configuration
-#
-
-# The Mailman Web Interface (Django) configuration (settings.py). Your configuration should be done in
-# 'mailman3_django_config', which is recursively merged with the defaults below. These options set or enable certain
-# values and sections in settings.py. The same caveats apply as discussed above for mailman3_config regarding quoting
-# YAML-parseable types and "unsetting" defaults.
-#
-# Be sure to set at least 'secret_key'. The default is not secure!
-#
-# Enabling the Xapian haystack engine on Debian-based distributions will cause the role to install the 'python3-xapian'
-# system package and symlink it in to the Mailman 3 venv. This is because the Xapian Python bindings are not in PyPI,
-# nor are they provided with a Python build definition, so any other installation method would be quite tedious. If you
-# wish to use the Xapian engine on EL, you will unfortunately need to install the Python bindings into the venv
-# yourself.
-#
-# mailman3_django_config:
-#   secret_key: SET ME!
-#   # store on the filesystem instead of the database
-#   hyperkitty_attachment_folder: "{{ mailman3_web_var_dir }}/attachments"
-#   databases:
-#     default:
-#       ENGINE: django.db.backends.postgresql_psycopg2
-#       NAME: mailman3_web
-#       HOST: /var/run/postgresql
-#   haystack_engine: xapian_backend.XapianEngine
-#
-# The options in the config mostly correspond to uppercase settings.py variables (e.g. admins = ADMINS), see
-# templates/settings.py.j2 for details.
-__mailman3_django_config_default:
-  admins: "{{ mailman3_django_superusers }}"
-  allowed_hosts: "{{ mailman3_domains | default([inventory_hostname]) }}"
-  csrf_trusted_origins: []
-  # MAILMAN_REST_API_URL
-  rest_api_url: "http://{{ mailman3_core_api_hostname }}:{{ mailman3_core_api_port }}"
-  # MAILMAN_REST_API_USER
-  rest_api_user: "{{ mailman3_core_api_admin_user }}"
-  # MAILMAN_REST_API_PASS
-  rest_api_pass: "{{ mailman3_core_api_admin_pass }}"
-  # MAILMAN_ARCHIVER_KEY
-  archiver_key: "{{ mailman3_archiver_key }}"
-  databases:
-    default:
-      ENGINE: django.db.backends.sqlite3
-      NAME: "{{ mailman3_web_var_dir }}/db/mailmansuite.db"
-      USER: ''
-      PASSWORD: ''
-      HOST: ''
-      PORT: ''
-  # Disable by default, recommended Django setup for nginx passes Host, not X-Forwarded-Host, but you may have to enable
-  # if using 'mailman3_domains' due to FILTER_VHOST still needing it
-  # use_x_forwarded_host: false
-  # secure_proxy_ssl_header: HTTP_X_FORWARDED_PROTO
-  # language_code: en-us
-  # default_http_protocol: https
-  default_from_email: "postorius@{{ inventory_hostname }}"
-  server_email: "{{ mailman3_site_owner }}"
-  # compress_offline: true
-  # socialaccount_providers: {}
-  # haystack_engine: xapian_backend.XapianEngin"
-  # debug: false
-
-# WSGI server to install when installing with pip, currently only gunicorn is supported by this role. The Mailman 3
-# documentation and Debian packages use uWSGI, which is no longer developed.
-mailman3_python_wsgi_package: gunicorn
-
-# gunicorn response timeout
-mailman3_web_timeout: 300
-
-# Command executed by systemd to run the WSGI server.
-mailman3_wsgi_command: >-
-  {{ mailman3_install_dir }}/bin/gunicorn
-  --timeout {{ mailman3_web_timeout }}
-  --pythonpath {{ mailman3_django_project_dir }}
-  --config {{ mailman3_core_etc_dir }}/gunicorn_config.py
-  'mailman_web.wsgi:application'
-
-# WSGI/proxy communication socket (value only used for pip installs, Debian uses a hardcoded default). If
-# mailman3_domains is set, this should contain a '%i' for the systemd service instance.
-mailman3_wsgi_socket: "/run/mailman3-web{{ mailman3_domains is defined | ternary('@%i', '') }}.sock"
-
-# Custom middleware derived from the removed django.middleware.http.SetRemoteAddrFromForwardedFor is needed to set
-# REMOTE_ADDR from X-Forwarded-For when using a UNIX domain socket rather than TCP for mailman3_wsgi_socket, since
-# Postorius/HyperKitty use REMOTE_ADDR rather than the other headers. See
-# https://docs.djangoproject.com/en/4.1/releases/1.1/#removed-setremoteaddrfromforwardedfor-middleware
-mailman3_django_middleware_module_name: "ansible_galaxyproject_mailman3_middleware"
-
-# Django superusers. Set at least one or you will be unable to manage your Mailman server from the web UI. The password
-# here is the initial password, once created it can be changed from within Django and will not be changed back by the
-# role.
-mailman3_django_superusers: []
-#  - name: admin
-#    email: admin@example.org
-#    pass: secret
-
-# If mailman3_domains is set, mailman3_config.default_from_email is ignored since it's assumed you want per-domain
-# addresses. In this case, set the username portion of the email (the domain will be added automatically)
-mailman3_default_from_user: postorius
-
-# Override upstream (Mailman) Django paths - set 'mailman3_postorius_root' to an empty string to serve Mailman from the
-# root of your web server. Setting either option overrides the value of ROOT_URLCONF in the Django settings to use a
-# copy of url.py templated from the role instead of the one installed with Mailman.
-# mailman3_postorius_root: 'mailman3/'
-# mailman3_hyperkitty_root: 'archives/'
-mailman3_django_urls_module_name: >-
-  {{
-    (mailman3_postorius_root is defined or mailman3_hyperkitty_root is defined) | ternary(
-      'ansible_galaxyproject_mailman3_urls', none
-    )
-  }}
-
-# Use pysassc rather than sassc for CSS preprocessing. Enabling installs the libsass Python package from PyPI, disabling
-# installs the sassc system package.
-mailman3_use_pysassc: true
-
-#
-# Postfix map distribution
-#
-
-# Distribute Postfix maps to MXs for use with relay_recipient_maps, so that MXs can reject mail to nonexistent
-# addresses. Installs Ansible and a playbook in a virtualenv. User/auth setup is up to you.
-#
-# list of dicts, required keys:
-#   host: inventory_hostname of mx (or "all") for vars to apply to all hosts
-#   mailman3_distribute_maps_dir: remote directory on mx to distribute maps to
-# all keys other than "host" are set as either host vars or in [all:vars] if host = "all"
-#
-# e.g. if mailman3_distribute_maps_dir is set to '/var/list', then tour Postfix config should contain something like:
-#   relay_recipient_maps = hash:/var/list/postfix_lmtp
-#
-# mailman3_distribute_maps:
-#   - host: all
-#     mailman3_distribute_maps_dir: /var/list
-#     mailman3_postmap_command: /usr/sbin/postmap
-#   - host: mx1.example.org
-#   - host: mx2.example.org
-#     ansible_user: postfix
-#   - host: mx3.example.org
-#     mailman3_distribute_maps_dir: /etc/postfix/mailman_maps
-
-# Where the map distribution playbook is created on the Mailman server
-mailman3_distribute_maps_virtualenv_dir: "{{ mailman3_core_var_dir }}/distribute_maps"
-
-# How often to synchronize maps, in minutes (runs as a cron job as the mailman3_core_user)
-# mailman3_distribute_map_frequency: 5
-
-#
 # Stuff below here you should not need to change
 #
 
 # Base set of Python packages
 __mailman3_pip_packages:
   - mailman
-  - mailman-web
-  - mailman-hyperkitty  # ??
-  - "{{ mailman3_python_wsgi_package }}"
 
 # Packages to install from PyPI if using the pip install method. Automatically includes libsass if mailman3_use_pysassc
 # is enabled.
@@ -391,22 +211,10 @@ mailman3_system_dependency_packages: >-
     (mailman3_use_pysassc | ternary([], ['sassc']))
   }}
 
-# Django paths
-mailman3_django_project_dir: >-
-  {{
-    (mailman3_install_method == 'pip') | ternary(
-      mailman3_web_var_dir ~ '/project',
-      '/usr/share/mailman3-web'
-    )
-  }}
-mailman3_django_static_dir: "{{ mailman3_web_var_dir }}/static"
-
 # Service names for performing restarts and naming systemd service units.
 mailman3_core_service_name: "{{ (mailman3_install_method == 'pip') | ternary('mailman3-core', 'mailman3') }}"
-mailman3_web_service_name: mailman3-web
 
 __mailman3_config_merged: "{{ __mailman3_config_default | combine(mailman3_config | default({}), recursive=True) }}"
-__mailman3_django_config_merged: "{{ __mailman3_django_config_default | combine(mailman3_django_config | default({}), recursive=True) }}"
 
 __mailman3_debian_user_name: list
 __mailman3_core_user_name: >-
@@ -416,8 +224,6 @@ __mailman3_core_user_name: >-
         'mailman')
     }}
 # __mailman3_core_user_group is set in the group_discovery tasks
-__mailman3_web_user_name: "{{ mailman3_web_user.name }}"
-__mailman3_web_group_name: "{{ mailman3_web_user.group | default(mailman3_web_user.name) }}"
 
 __mailman3_os: >-
   {{
@@ -427,9 +233,5 @@ __mailman3_os: >-
     ) | lower
   }}
 
-# Server name nginx should listen on, defaults to inventory_hostname.
-mailman3_web_url: "{{ inventory_hostname }}"
-mailman3_install_nginx: true
-# Override this will a value similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
+# A variable similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
 mailman3_hyperkitty_server_url: "http://localhost"
-mailman3_nginx_ssl_certs: "include snippets/snakeoil.conf;"

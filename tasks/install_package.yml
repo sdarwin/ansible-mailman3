@@ -11,13 +11,3 @@
 - name: Install Mailman and dependency packages
   ansible.builtin.package:
     name: "{{ mailman3_packages }}"
-
-- name: Create/update Django local settings
-  ansible.builtin.template:
-    src: "settings_local.py.j2"
-    dest: /etc/mailman3/mailman-web.py
-    group: "{{ __mailman3_web_group_name }}"
-    mode: "0640"
-    backup: "{{ mailman3_backup_configs }}"
-  notify:
-    - Restart mailman3-web service
