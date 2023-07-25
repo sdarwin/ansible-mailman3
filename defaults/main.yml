@@ -177,7 +177,13 @@ __mailman3_config_default:
 
 # Base set of Python packages
 __mailman3_pip_packages:
+  - importlib-resources==5.13.0
   - mailman
+
+# Keeping from from the full version of the role here in the core version.
+# Use pysassc rather than sassc for CSS preprocessing. Enabling installs the libsass Python package from PyPI, disabling
+# installs the sassc system package.
+mailman3_use_pysassc: true
 
 # Packages to install from PyPI if using the pip install method. Automatically includes libsass if mailman3_use_pysassc
 # is enabled.
@@ -235,3 +241,7 @@ __mailman3_os: >-
 
 # A variable similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
 mailman3_hyperkitty_server_url: "http://localhost"
+
+mailman3_mta: postfix
+mailman3_relayhost: smtp.mailgun.org:587
+mailman3_sasl_passwd: smtp.mailgun.org postmaster@example.com:12345

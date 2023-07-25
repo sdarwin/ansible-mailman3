@@ -6,6 +6,10 @@
   vars:
     _mailman3_user: "{{ mailman3_core_user }}"
 
+- name: Install postfix
+  ansible.builtin.include_tasks: postfix.yml
+  when: mailman3_mta == "postfix"
+
 - name: Include group discovery tasks
   ansible.builtin.import_tasks: group_discovery.yml
 
