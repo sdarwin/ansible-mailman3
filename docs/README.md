@@ -45,7 +45,7 @@ mailman3_django_superusers:
 mailman3_archiver_key: ___
 mailman3_hyperkitty_server_url: 'https://mailman-staging.boost.cpp.al'
 
-# Manually set this in /etc/postfix/main.cf. Ansible is not doing that.
+# Manually set this in /etc/postfix/main.cf. Now that ansible is installing main.cf, it should already be present.
 # transport_maps = hash:/var/lib/mailman3/data/postfix_lmtp
 # local_recipient_maps = hash:/var/lib/mailman3/data/postfix_lmtp
 # relay_domains = hash:/var/lib/mailman3/data/postfix_domains

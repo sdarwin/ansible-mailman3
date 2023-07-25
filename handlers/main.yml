@@ -33,3 +33,14 @@
   ansible.builtin.service:
     name: nginx
     state: restarted
+
+- name: Generate sasl_passwd.db
+  ansible.builtin.command:
+    cmd: postmap sasl_password
+    chdir: /etc/postfix/sasl
+  changed_when: always
+
+- name: Restart postfix
+  ansible.builtin.service:
+    name: postfix
+    state: restarted

@@ -1,0 +1,32 @@
+---
+- name: Install postfix
+  ansible.builtin.package:
+    name:
+      - postfix
+      - mailutils
+
+- name: Install main.cf
+  ansible.builtin.template:
+    src: postfix_main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart postfix
+
+- name: Create sasl directory
+  ansible.builtin.file:
+    path: /etc/postfix/sasl
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create sasl_passwd file
+  ansible.builtin.template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl/sasl_passwd
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Generate sasl_passwd.db

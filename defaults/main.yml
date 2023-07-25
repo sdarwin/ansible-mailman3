@@ -354,6 +354,7 @@ mailman3_distribute_maps_virtualenv_dir: "{{ mailman3_core_var_dir }}/distribute
 
 # Base set of Python packages
 __mailman3_pip_packages:
+  - importlib-resources==5.13.0
   - mailman
   - mailman-web
   - mailman-hyperkitty  # ??
@@ -433,3 +434,6 @@ mailman3_install_nginx: true
 # Override this will a value similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
 mailman3_hyperkitty_server_url: "http://localhost"
 mailman3_nginx_ssl_certs: "include snippets/snakeoil.conf;"
+mailman3_mta: postfix
+mailman3_relayhost: smtp.mailgun.org:587
+mailman3_sasl_passwd: smtp.mailgun.org postmaster@example.com:12345
