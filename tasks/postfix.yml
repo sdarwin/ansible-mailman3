@@ -4,6 +4,7 @@
     name:
       - postfix
       - mailutils
+      - ssl-cert
 
 - name: Install main.cf
   ansible.builtin.template:

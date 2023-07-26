@@ -1,5 +1,4 @@
 ---
-
 - name: Install Nginx packages
   ansible.builtin.package:
     name: "nginx"

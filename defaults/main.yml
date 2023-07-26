@@ -431,9 +431,28 @@ __mailman3_os: >-
 # Server name nginx should listen on, defaults to inventory_hostname.
 mailman3_web_url: "{{ inventory_hostname }}"
 mailman3_install_nginx: true
-# Override this will a value similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
-mailman3_hyperkitty_server_url: "http://localhost"
+# Similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
+mailman3_hyperkitty_server_url: "https://{{ inventory_hostname }}"
 mailman3_nginx_ssl_certs: "include snippets/snakeoil.conf;"
 mailman3_mta: postfix
 mailman3_relayhost: smtp.mailgun.org:587
 mailman3_sasl_passwd: smtp.mailgun.org postmaster@example.com:12345
+
+# Database variables
+mailman3_database_type: postgres
+mailman3_database_pg_packages:
+  - postgresql-15
+  # - postgresql-contrib
+  - libpq-dev
+  - python3-pip
+mailman3_database_super_password: superpassword
+mailman3_postgresql_config_dir: "/etc/postgresql/15"
+mailman3_database_list:
+  - name: mailman3_web
+    username: mailman3_web
+    password: mypassword
+    subnet: "0.0.0.0/0"
+  - name: mailman3_core
+    username: mailman3_core
+    password: mypassword
+    subnet: "0.0.0.0/0"

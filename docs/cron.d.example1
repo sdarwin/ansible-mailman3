@@ -1,0 +1,15 @@
+# /etc/cron.d/mailman-web
+#Ansible: hourly
+@hourly mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs hourly
+#Ansible: daily
+@daily mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs daily
+#Ansible: weekly
+@weekly mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs weekly
+#Ansible: monthly
+@monthly mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs monthly
+#Ansible: yearly
+@yearly mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs yearly
+#Ansible: minutely
+* * * * * mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs minutely
+#Ansible: quarter_hourly
+2,17,32,47 * * * * mailman3-web MAILMAN_WEB_CONFIG=/var/lib/mailman3/web/project/settings.py /opt/mailman3/bin/mailman-web runjobs quarter_hourly
