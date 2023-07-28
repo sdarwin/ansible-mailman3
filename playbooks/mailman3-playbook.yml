@@ -1,0 +1,15 @@
+---
+- hosts: mailman3-database
+  become: true
+  remote_user: ubuntu
+  tasks:
+    - name: Install DB
+      ansible.builtin.include_role:
+        name: cppalliance.mailman3
+        tasks_from: database/main.yml
+
+- hosts: mailman3
+  become: true
+  remote_user: ubuntu
+  roles:
+    - role: cppalliance.mailman3

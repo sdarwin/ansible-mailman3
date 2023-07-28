@@ -1,0 +1,4 @@
+---
+- name: Install postgres
+  ansible.builtin.include_tasks: database/postgres.yml
+  when: mailman3_database_type == "postgres"

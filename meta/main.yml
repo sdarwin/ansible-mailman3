@@ -1,26 +1,15 @@
 ---
 galaxy_info:
-  namespace: galaxyproject
+  namespace: cppalliance
   role_name: mailman3
-  author: The Galaxy Project
-  company: The Galaxy Project
+  author: cppalliance
+  company: cppalliance
   description: Mailman 3 installation, configuration, and management for Linux
   license: license (MIT)
   min_ansible_version: "2.9"
   platforms:
-    - name: EL
-      versions:
-        - "7"
-        - "8"
-    - name: Debian
-      versions:
-        - buster
-        - bullseye
-        - sid
     - name: Ubuntu
       versions:
-        - xenial
-        - bionic
         - jammy
   galaxy_tags:
     - mail

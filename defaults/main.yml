@@ -239,8 +239,8 @@ __mailman3_os: >-
     ) | lower
   }}
 
-# A variable similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
-mailman3_hyperkitty_server_url: "http://localhost"
+# Similar to mailman3_web_url. Used in /etc/mailman3/hyperkitty.cfg:
+mailman3_hyperkitty_server_url: "https://{{ inventory_hostname }}"
 
 mailman3_mta: postfix
 mailman3_relayhost: smtp.mailgun.org:587

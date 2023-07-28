@@ -51,7 +51,7 @@ ALLOWED_HOSTS = [
     "localhost",  # Archiving API from Mailman, keep it.
     "127.0.0.1",
     # Add here all production URLs you may have.
-    "mailman.boost.cpp.al",
+    "mailman.example.org",
 ]
 
 #: See https://docs.djangoproject.com/en/dev/ref/settings/#csrf-trusted-origins
@@ -61,8 +61,8 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     # "lists.your-domain.org",
     # Add here all production domains you have.
-    "http://mailman.boost.cpp.al",
-    "https://mailman.boost.cpp.al",
+    "http://mailman.example.org",
+    "https://mailman.example.org",
 ]
 
 #: Current Django Site being served. This is used to customize the web host
@@ -79,11 +79,11 @@ MAILMAN_ARCHIVER_KEY = '__'
 
 # The sender of emails from Django such as address confirmation requests.
 # Set this to a valid email address.
-DEFAULT_FROM_EMAIL = 'postorius@mailman.boost.cpp.al'
+DEFAULT_FROM_EMAIL = 'postorius@mailman.example.org'
 
 # The sender of error messages from Django. Set this to a valid email
 # address.
-SERVER_EMAIL = 'root@mailman.boost.cpp.al'
+SERVER_EMAIL = 'root@mailman.example.org'
 
 # Mailman API credentials
 MAILMAN_REST_API_URL = 'http://localhost:8001'
