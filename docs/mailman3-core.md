@@ -61,6 +61,7 @@ Mailman-web recommended cron jobs to handle periodic tasks. See the example cron
 A core-only installation requires fewer variables. Configure /etc/ansible/host_vars/mailman.example.org/vars. Fill in passwords and secrets as necessary.  
 
 ```yaml
+mailman3_core_api_hostname: "{{ inventory_hostname }}"
 mailman3_core_api_admin_user: adminuser
 mailman3_core_api_admin_pass: adminpass
 mailman3_archiver_key: archiverkey

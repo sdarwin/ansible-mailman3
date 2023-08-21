@@ -1,5 +1,8 @@
 ---
 
+- name: Include server configuration tasks
+  ansible.builtin.include_tasks: server.yml
+
 - name: Include core user creation tasks
   ansible.builtin.include_tasks: user.yml
   when: mailman3_create_core_user

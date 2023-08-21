@@ -106,6 +106,7 @@ mailman3_django_superusers:
   - name: admin
     pass: admin
     email: admin@example.org
+mailman3_core_api_hostname: "{{ inventory_hostname }}"
 mailman3_core_api_admin_user: adminuser
 mailman3_core_api_admin_pass: adminpass
 mailman3_archiver_key: archiverkey

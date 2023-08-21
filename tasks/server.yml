@@ -1,0 +1,9 @@
+---
+- name: Set line in /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "{{ inventory_hostname }}"
+    line: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }} {{ inventory_hostname }} {{ ansible_hostname }}"
+    owner: root
+    group: root
+    mode: '0644'
