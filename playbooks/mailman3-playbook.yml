@@ -1,5 +1,6 @@
 ---
-- hosts: mailman3-database
+- name: Mailman3 playbook install database
+  hosts: mailman3-database
   become: true
   remote_user: ubuntu
   tasks:
@@ -8,7 +9,8 @@
         name: cppalliance.mailman3
         tasks_from: database/main.yml
 
-- hosts: mailman3
+- name: Mailman3 playbook
+  hosts: mailman3
   become: true
   remote_user: ubuntu
   roles:
