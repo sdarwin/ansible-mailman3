@@ -88,6 +88,21 @@ mailman3_database_list:
     subnet: "0.0.0.0/0"
 ```
 
+## Checklist
+
+Is mailman3-core reachable:  
+
+```
+wget http://server:8001
+```
+
+Is email working:  
+
+```
+mail test@example.com  # outgoing mail
+gmail root@server      # incoming mail
+```
+
 ## List Setup  
 
 Recommended changes. After creating a list in the UI, make the following updates to the list:  

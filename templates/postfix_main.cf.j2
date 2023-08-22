@@ -58,5 +58,5 @@ permit_sasl_authenticated = defer_unauth_destinations
 {% endif %}
 
 transport_maps = hash:/var/lib/mailman3/data/postfix_lmtp
-local_recipient_maps = hash:/var/lib/mailman3/data/postfix_lmtp
+local_recipient_maps = proxy:unix:passwd.byname $alias_maps hash:/var/lib/mailman3/data/postfix_lmtp
 relay_domains = hash:/var/lib/mailman3/data/postfix_domains
