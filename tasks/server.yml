@@ -1,4 +1,9 @@
 ---
+- name: Apt update
+  ansible.builtin.apt:
+    update_cache: true
+  changed_when: false
+
 - name: Set line in /etc/hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
