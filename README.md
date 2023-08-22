@@ -139,6 +139,11 @@ mailman3_nginx_ssl_certs: |
       # ssl_certificate_key /etc/letsencrypt/live/{{ mailman3_web_url }}/privkey.pem;
 mailman3_sasl_passwd: smtp.mailgun.org postmaster@mailman.example.org:555555555
 mailman3_relayhost: smtp.mailgun.org:587
+```
+
+/etc/ansible/host_vars/database.example.org/vars:  
+
+```
 mailman3_database_list:
   - name: mailman3_web
     username: mailman3_web

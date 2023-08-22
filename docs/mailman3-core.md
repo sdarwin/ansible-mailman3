@@ -76,6 +76,11 @@ mailman3_extra_packages:
   - psycopg2-binary
 mailman3_sasl_passwd: smtp.mailgun.org postmaster@mailman.example.org:555555555
 mailman3_relayhost: smtp.mailgun.org:587
+```
+
+/etc/ansible/host_vars/database.example.org/vars:  
+
+```
 mailman3_database_list:
   - name: mailman3_core
     username: mailman3_core
