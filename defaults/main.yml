@@ -354,6 +354,7 @@ mailman3_distribute_maps_virtualenv_dir: "{{ mailman3_core_var_dir }}/distribute
 
 # Base set of Python packages
 __mailman3_pip_packages:
+  - django-allauth==0.54.0
   - importlib-resources==5.13.0
   - mailman
   - mailman-web
