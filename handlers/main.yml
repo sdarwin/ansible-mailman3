@@ -49,3 +49,8 @@
   ansible.builtin.service:
     name: postgresql
     state: restarted
+
+- name: Restart elasticsearch
+  ansible.builtin.service:
+    name: elasticsearch
+    state: restarted

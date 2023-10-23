@@ -1,0 +1,52 @@
+---
+- name: Add required Elasticsearch dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+
+- name: Add Elasticsearch apt key
+  ansible.builtin.apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Add Elasticsearch repository
+  ansible.builtin.apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}/apt stable main'
+    state: present
+    update_cache: true
+
+- name: Install Elasticsearch package
+  ansible.builtin.package:
+    name: elasticsearch
+    state: present
+
+- name: Configure Elasticsearch 7+
+  ansible.builtin.template:
+    src: "{{ item | basename }}.j2"
+    dest: "{{ item }}"
+    owner: root
+    group: elasticsearch
+    mode: 0660
+  with_items:
+    - /etc/elasticsearch/elasticsearch.yml
+    - /etc/elasticsearch/jvm.options.d/heap.options
+  notify: Restart elasticsearch
+  when: elasticsearch_version[0] | int >= 7
+
+- name: Force a restart if configuration has changed
+  ansible.builtin.meta: flush_handlers
+
+- name: Start Elasticsearch
+  ansible.builtin.service:
+    name: elasticsearch
+    state: started
+    enabled: true
+
+- name: Make sure Elasticsearch is running before proceeding
+  ansible.builtin.wait_for:
+    host: "{{ elasticsearch_network_host }}"
+    port: "{{ elasticsearch_http_port }}"
+    delay: 3
+    timeout: 300

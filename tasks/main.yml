@@ -9,6 +9,10 @@
   vars:
     _mailman3_user: "{{ mailman3_core_user }}"
 
+- name: Install Elasticsearch
+  ansible.builtin.include_tasks: elasticsearch.yml
+  when: elasticsearch_install
+
 - name: Install postfix
   ansible.builtin.include_tasks: postfix.yml
   when: mailman3_mta == "postfix"
