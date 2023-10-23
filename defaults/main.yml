@@ -260,3 +260,11 @@ mailman3_database_list:
     username: mailman3_core
     password: mypassword
     subnet: "0.0.0.0/0"
+
+elasticsearch_install: true
+elasticsearch_version: '7.x'
+elasticsearch_network_host: "0.0.0.0"
+elasticsearch_http_port: 9200
+elasticsearch_extra_options: ''
+elasticsearch_heap_size_min: 1g
+elasticsearch_heap_size_max: 2g
