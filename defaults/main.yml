@@ -179,6 +179,7 @@ __mailman3_config_default:
 __mailman3_pip_packages:
   - importlib-resources==5.13.0
   - mailman
+  - mailman-hyperkitty
 
 # Keeping from from the full version of the role here in the core version.
 # Use pysassc rather than sassc for CSS preprocessing. Enabling installs the libsass Python package from PyPI, disabling
