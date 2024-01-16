@@ -13,5 +13,6 @@
   hosts: mailman3
   become: true
   remote_user: ubuntu
+  force_handlers: true
   roles:
     - role: cppalliance.mailman3

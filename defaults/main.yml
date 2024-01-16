@@ -378,6 +378,7 @@ mailman3_packages:
 # sassc if mailman3_use_pysassc is not enabled.
 __mailman3_system_dependency_packages:
   debian:
+    - acl
     - python3
     - python3-venv
     - python3-setuptools

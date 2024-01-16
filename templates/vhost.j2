@@ -3,6 +3,9 @@ upstream myapp {
   server unix:/run/mailman3-web.sock;
 }
 
+# This localhost vhost was needed for a process, before. Was it imports?
+# Add a comment about the reasons.
+
 server {
    listen 80;
    server_name localhost;
