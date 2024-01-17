@@ -122,6 +122,7 @@ mailman3_core_api_hostname: localhost
 mailman3_core_api_port: 8001
 mailman3_core_api_admin_user: restadmin
 mailman3_core_api_admin_pass: restpass
+mailman3_core_public_rest_api: false
 
 # Using the default archiver secret key is not secure, generate a random key!
 mailman3_archiver_key: SecretArchiverAPIKey

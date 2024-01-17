@@ -29,3 +29,8 @@
     dest: /etc/nginx/sites-enabled/default
     state: absent
   notify: Restart nginx
+
+- name: Install certbot
+  community.general.snap:
+    name: certbot
+    classic: true
