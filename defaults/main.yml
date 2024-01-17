@@ -360,6 +360,7 @@ __mailman3_pip_packages:
   - mailman
   - mailman-web
   - mailman-hyperkitty  # ??
+  - elasticsearch==7.17.9
   - "{{ mailman3_python_wsgi_package }}"
 
 # Packages to install from PyPI if using the pip install method. Automatically includes libsass if mailman3_use_pysassc
@@ -467,3 +468,6 @@ elasticsearch_http_port: 9200
 elasticsearch_extra_options: ''
 elasticsearch_heap_size_min: 1g
 elasticsearch_heap_size_max: 2g
+# used by Django, not necessarily by elasticsearch itself:
+elasticsearch_index_name: mailman
+elasticsearch_url: "http://127.0.0.1:9200/"

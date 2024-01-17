@@ -117,6 +117,7 @@ mailman3_config:
     class: mailman.database.postgresql.PostgreSQLDatabase
     url: postgresql://mailman3_core:mypassword@mailman.example.org/mailman3_core
 mailman3_django_config:
+  haystack_engine: haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine
   secret_key: supersecret
   # Don't define hyperkitty_attachment_folder. If not set, it will store attachments in the db.
   # hyperkitty_attachment_folder: "{{ mailman3_web_var_dir }}/attachments"

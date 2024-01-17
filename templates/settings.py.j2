@@ -135,12 +135,22 @@ EMAIL_FILE_PATH = os.path.join("{{ mailman3_web_var_dir }}", 'emails')
 #
 # Full-text search engine
 #
+{% if 'Elasticsearch' in  __mailman3_django_config_merged.haystack_engine %}
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': '{{ __mailman3_django_config_merged.haystack_engine }}',
+        "URL": "{{ elasticsearch_url }}",
+        "INDEX_NAME": "{{ elasticsearch_index_name }}",
+    },
+}
+{% else %}
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': '{{ __mailman3_django_config_merged.haystack_engine }}',
         'PATH': os.path.join("{{ mailman3_web_var_dir }}", "fulltext_index"),
     },
 }
+{% endif %}
 {% endif %}
 {% if __mailman3_django_config_merged.socialaccount_providers is defined %}
 
