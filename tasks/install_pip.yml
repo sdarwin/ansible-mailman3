@@ -113,8 +113,19 @@
 
 - name: Create Django settings file
   ansible.builtin.template:
-    src: settings.py.j2
+    src: "{{ mailman3_django_settings_template }}"
     dest: "{{ mailman3_django_project_dir }}/settings.py"
+    mode: "0640"
+    owner: root
+    group: "{{ __mailman3_web_group_name }}"
+    backup: "{{ mailman3_backup_configs }}"
+  notify:
+    - Reload mailman3-web service
+
+- name: Create Django environment variable file
+  ansible.builtin.template:
+    src: web_env.j2
+    dest: "{{ mailman3_django_project_dir }}/.env"
     mode: "0640"
     owner: root
     group: "{{ __mailman3_web_group_name }}"

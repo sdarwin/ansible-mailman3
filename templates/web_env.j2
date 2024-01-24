@@ -1,0 +1,118 @@
+ADMIN_NAME='{{ mailman3_django_superusers[0].name }}'
+ADMIN_EMAIL='{{ mailman3_django_superusers[0].email }}'
+{% for key in __mailman3_django_config_merged.databases | sort %}
+{% for opt in __mailman3_django_config_merged.databases[key] | sort %}
+DATABASES_{{ key|upper }}_{{ opt|upper }}='{{ __mailman3_django_config_merged.databases[key][opt] }}'
+{% endfor %}
+{% endfor %}
+{% if mailman3_web_log_file is defined %}
+WEB_LOG_FILE='{{ mailman3_web_log_file }}'
+{% endif %}
+STATIC_ROOT='{{ mailman3_django_static_dir }}'
+{% if mailman3_django_log_dir is defined %}
+DJANGO_LOG_DIR='{{ mailman3_django_log_dir }}'
+{% endif %}
+{% if mailman3_django_urls_module_name is defined and mailman3_django_urls_module_name|d('')| trim | length > 0 %}
+DJANGO_URLS_MODULE_NAME='{{ mailman3_django_urls_module_name }}'
+{% endif %}
+{% set ns = namespace() %}
+{% set ns.jinja2_allowed_hosts = "" %}
+{% for host in __mailman3_django_config_merged.allowed_hosts %}
+{% if ns.jinja2_allowed_hosts == "" %}
+{% set ns.jinja2_allowed_hosts = host %}
+{% else %}
+{% set ns.jinja2_allowed_hosts = (ns.jinja2_allowed_hosts + ", " + host) %}
+{% endif %}
+{% endfor %}
+ALLOWED_HOSTS='{{ ns.jinja2_allowed_hosts }}'
+{% set ns.jinja2_csrf_trusted_origins = "" %}
+{% for origin in __mailman3_django_config_merged.csrf_trusted_origins %}
+{% if ns.jinja2_csrf_trusted_origins == "" %}
+{% set ns.jinja2_csrf_trusted_origins = origin %}
+{% else %}
+{% set ns.jinja2_csrf_trusted_origins = (ns.jinja2_csrf_trusted_origins + ", " + origin) %}
+{% endif %}
+{% endfor %}
+CSRF_TRUSTED_ORIGINS='{{ ns.jinja2_csrf_trusted_origins }}'
+SITE_ID={{ __mailman3_django_config_merged.site_id | default(1) }}
+SECRET_KEY='{{ __mailman3_django_config_merged.secret_key | default('change-this-on-your-production-server') }}'
+MAILMAN_ARCHIVER_KEY='{{ __mailman3_django_config_merged.archiver_key | default('SecretArchiverAPIKey') }}'
+DEFAULT_FROM_EMAIL='{{ __mailman3_django_config_merged.default_from_email }}'
+SERVER_EMAIL='{{ __mailman3_django_config_merged.server_email }}'
+MAILMAN_REST_API_URL='{{ __mailman3_django_config_merged.rest_api_url | default('http://localhost:8001') }}'
+MAILMAN_REST_API_USER='{{ __mailman3_django_config_merged.rest_api_user | default('restadmin') }}'
+MAILMAN_REST_API_PASS='{{ __mailman3_django_config_merged.rest_api_pass | default('restpass') }}'
+{% if __mailman3_django_config_merged.archiver_from is defined %}
+{% set ns.jinja2_archiver_from = "" %}
+{% for host in __mailman3_django_config_merged.archiver_from %}
+{% if ns.jinja2_archiver_from == "" %}
+{% set ns.jinja2_archiver_from = host %}
+{% else %}
+{% set ns.jinja2_archiver_from = (ns.jinja2_archiver_from + ", " + host) %}
+{% endif %}
+{% endfor %}
+MAILMAN_ARCHIVER_FROM='{{ ns.jinja2_archiver_from }}'
+{% endif %}
+{% if mailman3_use_pysassc is defined %}
+MAILMAN3_USE_PYSASSC='{{ mailman3_use_pysassc }}'
+{% endif %}
+{% if __mailman3_django_config_merged.debug | default(false) | bool %}
+DJANGO_DEBUG='True'
+{% else %}
+DJANGO_DEBUG='False'
+{% endif %}
+WEB_VAR_DIR='{{ mailman3_web_var_dir }}'
+{% if __mailman3_django_config_merged.haystack_engine is defined and ('Elasticsearch' in  __mailman3_django_config_merged.haystack_engine) %}
+HAYSTACK_ENGINE_ELASTIC='True'
+{% else %}
+HAYSTACK_ENGINE_ELASTIC='False'
+{% endif %}
+{% if __mailman3_django_config_merged.haystack_engine is defined %}
+HAYSTACK_ENGINE='{{ __mailman3_django_config_merged.haystack_engine }}'
+{% endif %}
+{% if elasticsearch_url is defined %}
+ELASTICSEARCH_URL='{{ elasticsearch_url }}'
+{% endif %}
+{% if elasticsearch_index_name is defined %}
+ELASTICSEARCH_INDEX_NAME='{{ elasticsearch_index_name }}'
+{% endif %}
+{% if __mailman3_django_config_merged.socialaccount_providers is defined %}
+{% set ns.jinja2_socialaccount_providers = "" %}
+{% for provider in __mailman3_django_config_merged.socialaccount_providers %}
+{% if ns.jinja2_socialaccount_providers == "" %}
+{% set ns.jinja2_socialaccount_providers = provider %}
+{% else %}
+{% set ns.jinja2_socialaccount_providers = (ns.jinja2_socialaccount_providers + ", " + provider) %}
+{% endif %}
+{% endfor %}
+SOCIALACCOUNT_PROVIDERS='{{ ns.jinja2_socialaccount_providers }}'
+{% endif %}
+{% if __mailman3_django_config_merged.socialaccount_providers is defined %}
+{% for key, value in __mailman3_django_config_merged.socialaccount_providers.items %}
+SOCIALACCOUNT_PROVIDERS_{{ key | upper }}='{{ value }}'
+{% endfor %}
+{% endif %}
+{% if  __mailman3_django_config_merged.use_x_forwarded_host is defined %}
+USE_X_FORWARDED_HOST='{{ __mailman3_django_config_merged.use_x_forwarded_host }}'
+{% endif %}
+{% if  __mailman3_django_config_merged.secure_proxy_ssl_header is defined %}
+SECURE_PROXY_SSL_HEADER='{{ __mailman3_django_config_merged.secure_proxy_ssl_header }}'
+{% endif %}
+{% if  __mailman3_django_config_merged.language_code is defined %}
+LANGUAGE_CODE='{{ __mailman3_django_config_merged.language_code }}'
+{% endif %}
+{% if  __mailman3_django_config_merged.time_zone is defined %}
+TIME_ZONE='{{ __mailman3_django_config_merged.time_zone }}'
+{% endif %}
+{% if  __mailman3_django_config_merged.default_http_protocol is defined %}
+DEFAULT_HTTP_PROTOCOL='{{ __mailman3_django_config_merged.default_http_protocol }}'
+{% endif %}
+{% if __mailman3_django_config_merged.compress_offline is defined %}
+COMPRESS_OFFLINE='{{ __mailman3_django_config_merged.compress_offline is defined }}'
+{% endif %}
+{% if __mailman3_django_config_merged.hyperkitty_attachment_folder is defined %}
+HYPERKITTY_ATTACHMENT_FOLDER='{{ __mailman3_django_config_merged.hyperkitty_attachment_folder }}'
+{% endif %}
+{% if mailman3_wsgi_socket.startswith("/") %}
+ADD_REMOTE_ADDR_MIDDLEWARE='{{ mailman3_django_middleware_module_name }}.SetRemoteAddrFromForwardedFor'
+{% endif %}

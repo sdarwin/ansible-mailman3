@@ -36,6 +36,8 @@ mailman3_web_var_dir: "{{ mailman3_core_var_dir }}/web"
 
 # Mailman Web Interface log file. Only applies to pip installation. If unset, logs to journald.
 # mailman3_web_log_file: /var/log/mailman3/web/mailman3-web.log
+# Set this in conjunction with the log_file:
+# mailman3_django_log_dir: "{{ mailman3_web_log_file | dirname }}"
 
 # When installing with pip and Mailman is already installed, should it be upgraded to the latest version? It's can be
 # convenient to only set this when you explicitly want to upgrade by running `ansible-playbook ... -e
@@ -361,6 +363,7 @@ __mailman3_pip_packages:
   - mailman-web
   - mailman-hyperkitty  # ??
   - elasticsearch==7.17.9
+  - environs
   - "{{ mailman3_python_wsgi_package }}"
 
 # Packages to install from PyPI if using the pip install method. Automatically includes libsass if mailman3_use_pysassc
@@ -405,6 +408,7 @@ mailman3_django_project_dir: >-
     )
   }}
 mailman3_django_static_dir: "{{ mailman3_web_var_dir }}/static"
+mailman3_django_settings_template: "settings.py.j2"
 
 # Service names for performing restarts and naming systemd service units.
 mailman3_core_service_name: "{{ (mailman3_install_method == 'pip') | ternary('mailman3-core', 'mailman3') }}"
