@@ -26,6 +26,13 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
 # 'collectstatic' command will copy all the static files here.
 # Alias this location from your webserver to `/static`
 STATIC_ROOT = env("STATIC_ROOT")

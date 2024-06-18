@@ -367,6 +367,7 @@ __mailman3_pip_packages:
   - elasticsearch==7.17.9
   - environs
   - "{{ mailman3_python_wsgi_package }}"
+  - django-pylibmc==0.6.1
 
 # Packages to install from PyPI if using the pip install method. Automatically includes libsass if mailman3_use_pysassc
 # is enabled.
@@ -389,6 +390,8 @@ __mailman3_system_dependency_packages:
     - python3
     - python3-venv
     - python3-setuptools
+    - memcached
+    - libmemcached-tools
   redhat-7:
     - rh-python38   # requires EL7+ and CentOS SCL
   redhat-8:
