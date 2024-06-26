@@ -89,6 +89,8 @@
       dest: "{{ mailman3_core_service_name }}.service"
     - src: mailman3-web.service
       dest: "{{ mailman3_web_service_name }}{{ '@' if mailman3_domains is defined else '' }}.service"
+    - src: qcluster.service
+      dest: qcluster.service
   loop_control:
     label: "{{ item.dest }}"
   when: mailman3_process_manager == 'systemd'
@@ -97,6 +99,7 @@
     # TODO: split tasks to only restart the affected service
     - Restart mailman3-core service
     - Restart mailman3-web service
+    - Restart qcluster service
 
 - name: Install systemd socket unit file
   ansible.builtin.template:

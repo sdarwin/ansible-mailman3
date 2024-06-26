@@ -1,0 +1,14 @@
+[Unit]
+Description=HyperKitty async tasks runner
+After=network.target remote-fs.target
+ConditionPathExists={{ mailman3_django_project_dir }}/settings.py
+
+[Service]
+Environment="MAILMAN_WEB_CONFIG={{ mailman3_django_project_dir }}/settings.py"
+ExecStart={{ mailman3_install_dir }}/bin/mailman-web qcluster
+User={{ __mailman3_web_user_name }}
+Group={{ __mailman3_web_group_name }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

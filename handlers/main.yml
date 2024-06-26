@@ -29,6 +29,13 @@
     - mailman3_process_manager == "systemd"
     - ansible_virtualization_type != "docker"
 
+- name: Restart qcluster service  # noqa command-instead-of-module
+  ansible.builtin.command: systemctl try-reload-or-restart qcluster.service
+  changed_when: false
+  when:
+    - mailman3_process_manager == "systemd"
+    - ansible_virtualization_type != "docker"
+
 - name: Restart nginx
   ansible.builtin.service:
     name: nginx

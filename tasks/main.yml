@@ -67,3 +67,10 @@
     state: started
   loop: "{{ mailman3_domains | default(['']) }}"
   when: mailman3_process_manager != "supervisor"
+
+- name: Ensure qcluster is enabled and running
+  ansible.builtin.service:
+    name: qcluster
+    enabled: true
+    state: started
+  when: mailman3_process_manager != "supervisor"
