@@ -482,3 +482,9 @@ elasticsearch_heap_size_max: 2g
 # used by Django, not necessarily by elasticsearch itself:
 elasticsearch_index_name: mailman
 elasticsearch_url: "http://127.0.0.1:9200/"
+
+swap_configure: true   # manage the swap or not
+swap_enable: true
+swap_file_path: /swapfile
+swap_file_size_mb: 4000
+swappiness: 1

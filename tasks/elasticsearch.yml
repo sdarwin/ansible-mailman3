@@ -28,7 +28,7 @@
     dest: "{{ item }}"
     owner: root
     group: elasticsearch
-    mode: 0660
+    mode: '0660'
   with_items:
     - /etc/elasticsearch/elasticsearch.yml
     - /etc/elasticsearch/jvm.options.d/heap.options

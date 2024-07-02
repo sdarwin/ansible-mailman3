@@ -1,4 +1,6 @@
 ---
+- name: Include swap configuration
+  ansible.builtin.include_tasks: swap.yml
 
 - name: Include server configuration tasks
   ansible.builtin.include_tasks: server.yml
